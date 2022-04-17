@@ -34,7 +34,7 @@ MainMenu:
 	jr z, .noSaveFile
 ; there's a save file
 	hlcoord 0, 0
-	ld b, 6
+	ld b, 9
 	ld c, 13
 	call TextBoxBorder
 	hlcoord 2, 2
@@ -43,7 +43,7 @@ MainMenu:
 	jr .next2
 .noSaveFile
 	hlcoord 0, 0
-	ld b, 4
+	ld b, 6
 	ld c, 13
 	call TextBoxBorder
 	hlcoord 2, 2
@@ -64,6 +64,7 @@ MainMenu:
 	ld a, A_BUTTON | B_BUTTON | START
 	ld [wMenuWatchedKeys], a
 	ld a, [wSaveFileStatus]
+	inc a; Adds third menu item
 	ld [wMaxMenuItem], a
 	call HandleMenuInput
 	bit BIT_B_BUTTON, a
@@ -84,7 +85,10 @@ MainMenu:
 	jr z, .choseContinue
 	cp 1
 	jp z, StartNewGame
-	call DisplayOptionMenu
+	cp 2
+	call z, DisplayOptionMenu
+	cp 3
+	call z, DisplayHackMenu
 	ld a, 1
 	ld [wOptionsInitialized], a
 	jp .mainMenuLoop
@@ -313,7 +317,7 @@ StartNewGameDebug:
 	call OakSpeech
 	ld c, 20
 	call DelayFrames
-
+	
 ; enter map after using a special warp or loading the game from the main menu
 SpecialEnterMap::
 	xor a
@@ -338,7 +342,8 @@ ContinueText:
 
 NewGameText:
 	db   "NEW GAME"
-	next "OPTION@"
+	next "OPTION"
+	next "HACKS@"
 
 CableClubOptionsText:
 	db   "TRADE CENTER"
@@ -430,6 +435,159 @@ SaveScreenInfoText:
 	next "BADGES    "
 	next "#DEX    "
 	next "TIME@"
+
+DisplayHackMenu:
+	hlcoord 0, 0
+	ld b, 3
+	ld c, 18
+	call TextBoxBorder
+	hlcoord 0, 5
+	ld b, 3
+	ld c, 18
+	call TextBoxBorder
+	hlcoord 0, 10
+	ld b, 3
+	ld c, 18
+	call TextBoxBorder
+	hlcoord 1, 1
+	ld de, TextBoxSpeedText
+	call PlaceString
+	hlcoord 1, 6
+	ld de, RunningShoesText
+	call PlaceString
+	hlcoord 1, 11
+	ld de, TrainerSpriteText
+	call PlaceString
+	hlcoord 2, 16
+	ld de, OptionMenuCancelText
+	call PlaceString
+	xor a
+	ld [wCurrentMenuItem], a
+	ld [wLastMenuItem], a
+	inc a
+	ld [wLetterPrintingDelayFlags], a
+	ld [wOptionsCancelCursorX], a
+	ld a, 3 ; text speed cursor Y coordinate
+	ld [wTopMenuItemY], a
+	call SetCursorPositionsFromHacks
+	ld a, [wHacksTextBoxSpeedCursorX] ; text speed cursor X coordinate
+	ld [wTopMenuItemX], a
+	ld a, $01
+	ldh [hAutoBGTransferEnabled], a ; enable auto background transfer
+	call Delay3
+.loop
+	call PlaceMenuCursor
+	call SetHacksFromCursorPositions
+.getJoypadStateLoop
+	call JoypadLowSensitivity
+	ldh a, [hJoy5]
+	ld b, a
+	and A_BUTTON | B_BUTTON | START | D_RIGHT | D_LEFT | D_UP | D_DOWN ; any key besides select pressed?
+	jr z, .getJoypadStateLoop
+	bit BIT_B_BUTTON, b
+	jr nz, .exitMenu
+	bit BIT_START, b
+	jr nz, .exitMenu
+	bit BIT_A_BUTTON, b
+	jr z, .checkDirectionKeys
+	ld a, [wTopMenuItemY]
+	cp 16 ; is the cursor on Cancel?
+	jr nz, .loop
+.exitMenu
+	ld a, SFX_PRESS_AB
+	call PlaySound
+	ret
+.eraseOldMenuCursor
+	ld [wTopMenuItemX], a
+	call EraseMenuCursor
+	jp .loop
+.checkDirectionKeys
+	ld a, [wTopMenuItemY]
+	bit BIT_D_DOWN, b
+	jr nz, .downPressed
+	bit BIT_D_UP, b
+	jr nz, .upPressed
+	cp 8 ; cursor in Running Shoes section?
+	jr z, .cursorInRunningShoes
+	cp 13 ; cursor in Trainer Sprite section?
+	jr z, .cursorInTrainerSprite
+	cp 16 ; cursor on Cancel?
+	jr z, .loop
+.cursorInTextSpeed
+	bit BIT_D_LEFT, b
+	jp nz, .pressedLeftInTextSpeed
+	jp .pressedRightInTextSpeed
+.downPressed
+	cp 16
+	ld b, -13
+	ld hl, wHacksTextBoxSpeedCursorX
+	jr z, .updateMenuVariables
+	ld b, 5
+	cp 3
+	inc hl
+	jr z, .updateMenuVariables
+	cp 8
+	inc hl
+	jr z, .updateMenuVariables
+	ld b, 3
+	inc hl
+	jr .updateMenuVariables
+.upPressed
+	cp 8
+	ld b, -5
+	ld hl, wHacksTextBoxSpeedCursorX
+	jr z, .updateMenuVariables
+	cp 13
+	inc hl
+	jr z, .updateMenuVariables
+	cp 16
+	ld b, -3
+	inc hl
+	jr z, .updateMenuVariables
+	ld b, 13
+	inc hl
+.updateMenuVariables
+	add b
+	ld [wTopMenuItemY], a
+	ld a, [hl]
+	ld [wTopMenuItemX], a
+	call PlaceUnfilledArrowMenuCursor
+	jp .loop
+.cursorInRunningShoes
+	ld a, [wHacksRunningShoesCursorX] ; battle animation cursor X coordinate
+	xor $0b ; toggle between 1 and 10
+	ld [wHacksRunningShoesCursorX], a
+	jp .eraseOldMenuCursor
+.cursorInTrainerSprite
+	ld a, [wHacksTrainerSpriteCursorX] ; battle style cursor X coordinate
+	xor $0b ; toggle between 1 and 10
+	ld [wHacksTrainerSpriteCursorX], a
+	jp .eraseOldMenuCursor
+.pressedLeftInTextSpeed
+	ld a, [wHacksTextBoxSpeedCursorX] ; text speed cursor X coordinate
+	cp 1
+	jr z, .updateTextSpeedXCoord
+	cp 7
+	jr nz, .fromSlowToMedium
+	sub 6
+	jr .updateTextSpeedXCoord
+.fromSlowToMedium
+	sub 7
+	jr .updateTextSpeedXCoord
+.pressedRightInTextSpeed
+	ld a, [wHacksTextBoxSpeedCursorX] ; text speed cursor X coordinate
+	cp 14
+	jr z, .updateTextSpeedXCoord
+	cp 7
+	jr nz, .fromFastToMedium
+	add 7
+	jr .updateTextSpeedXCoord
+.fromFastToMedium
+	add 6
+.updateTextSpeedXCoord
+	ld [wHacksTextBoxSpeedCursorX], a ; text speed cursor X coordinate
+	jp .eraseOldMenuCursor
+
 
 DisplayOptionMenu:
 	hlcoord 0, 0
@@ -583,6 +741,18 @@ DisplayOptionMenu:
 	ld [wOptionsTextSpeedCursorX], a ; text speed cursor X coordinate
 	jp .eraseOldMenuCursor
 
+TextBoxSpeedText:
+	db   "TEXT BOX SPEED"
+	next " NORM  INST   AUTO@"
+
+RunningShoesText:
+	db   "RUNNING SHOES"
+	next " OFF      ON@"
+
+TrainerSpriteText:
+	db   "TRAINER SPRITES"
+	next " MALE     FEMALE@"
+
 TextSpeedOptionText:
 	db   "TEXT SPEED"
 	next " FAST  MEDIUM SLOW@"
@@ -597,6 +767,41 @@ BattleStyleOptionText:
 
 OptionMenuCancelText:
 	db "CANCEL@"
+
+SetHacksFromCursorPositions:
+	ld hl, TextBoxSpeedOptionData
+	ld a, [wHacksTextBoxSpeedCursorX] ; text box speed cursor X coordinate
+	ld c, a
+.loop
+	ld a, [hli]
+	cp c
+	jr z, .textSpeedMatchFound
+	inc hl
+	jr .loop
+.textSpeedMatchFound
+	ld a, [hl]
+	ld d, a
+	ld a, [wHacksRunningShoesCursorX] ; running shoes (battle animation) cursor X coordinate
+	dec a
+	jr z, .RunningShoesOn
+.battleRunningShoesOff
+	set 7, d
+	jr .checkBattleStyle
+.RunningShoesOn
+	res 7, d
+.checkBattleStyle
+	ld a, [wHacksTrainerSpriteCursorX] ; trainer sprite (battle style) cursor X coordinate
+	dec a
+	jr z, .battleStyleShift
+.battleStyleSet
+	set 6, d
+	jr .storeOptions
+.battleStyleShift
+	res 6, d
+.storeOptions
+	ld a, d
+	ld [wHacks], a
+	ret
 
 ; sets the options variable according to the current placement of the menu cursors in the options menu
 SetOptionsFromCursorPositions:
@@ -632,6 +837,47 @@ SetOptionsFromCursorPositions:
 .storeOptions
 	ld a, d
 	ld [wOptions], a
+	ret
+
+; reads the hacks variable and places menu cursors accordingly
+SetCursorPositionsFromHacks:
+	ld hl, TextBoxSpeedOptionData + 1
+	ld a, [wHacks]
+	ld c, a
+	and $3f
+	push bc
+	ld de, 2
+	call IsInArray
+	pop bc
+	dec hl
+	ld a, [hl]
+	ld [wHacksTextBoxSpeedCursorX], a ; text box speed cursor X coordinate
+	hlcoord 0, 3
+	call .placeUnfilledRightArrow
+	sla c
+	ld a, 1 ; On
+	jr nc, .storeRunningShoeCursorX
+	ld a, 10 ; Off
+.storeRunningShoeCursorX
+	ld [wHacksRunningShoesCursorX], a ; running shoes (battle animation) cursor X coordinate
+	hlcoord 0, 8
+	call .placeUnfilledRightArrow
+	sla c
+	ld a, 1
+	jr nc, .storeTrainerSpriteCursorX
+	ld a, 10
+.storeTrainerSpriteCursorX
+	ld [wHacksTrainerSpriteCursorX], a ; trainer sprite (battle style) cursor X coordinate
+	hlcoord 0, 13
+	call .placeUnfilledRightArrow
+; cursor in front of Cancel
+	hlcoord 0, 16
+	ld a, 1
+.placeUnfilledRightArrow
+	ld e, a
+	ld d, 0
+	add hl, de
+	ld [hl], "▷"
 	ret
 
 ; reads the options variable and places menu cursors in the correct positions within the options menu
@@ -684,6 +930,12 @@ TextSpeedOptionData:
 	db  7, TEXT_DELAY_MEDIUM
 	db  1, TEXT_DELAY_FAST
 	db  7, -1 ; end (default X coordinate)
+
+TextBoxSpeedOptionData:
+	db 14, TEXT_BOX_AUTO
+	db  7, TEXT_BOX_INSTANT
+	db  1, TEXT_BOX_NORMAL
+	db 1, -1
 
 CheckForPlayerNameInSRAM:
 ; Check if the player name data in SRAM has a string terminator character

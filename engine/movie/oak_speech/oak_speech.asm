@@ -1,6 +1,8 @@
 SetDefaultNames:
 	ld a, [wLetterPrintingDelayFlags]
 	push af
+	ld a, [wHacks]   ; Pushes wHacks to Stack to later retrieve
+	push af          ; after memory filling is complete
 	ld a, [wOptions]
 	push af
 	ld a, [wd732]
@@ -18,6 +20,8 @@ SetDefaultNames:
 	pop af
 	ld [wOptions], a
 	pop af
+	ld [wHacks], a ; Pops wHacks from Stack
+	pop af         ;
 	ld [wLetterPrintingDelayFlags], a
 	ld a, [wOptionsInitialized]
 	and a

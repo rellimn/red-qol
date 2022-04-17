@@ -779,6 +779,11 @@ wOptionsBattleStyleCursorX:: db
 wOptionsCancelCursorX:: db
 
 NEXTU
+wHacksTextBoxSpeedCursorX:: db
+wHacksRunningShoesCursorX:: db
+wHacksTrainerSpriteCursorX:: db
+
+NEXTU
 ; tile ID of the badge number being drawn
 wBadgeNumberTile:: db
 ; first tile ID of the name being drawn
@@ -1765,6 +1770,18 @@ wRivalName:: ds NAME_LENGTH
 ; 3: Medium
 ; 5: Slow
 wOptions:: db
+
+; bit 7 = Running Shoes
+; 0: Off
+; 1: On
+; bit 6 = Trainer Sprites
+; 0: Male
+; 1: Female
+; bits 0-3 = text box speed
+; 1: Normal
+; 3: Instant
+; 5: Auto
+wHacks:: db
 
 wObtainedBadges:: flag_array NUM_BADGES
 
