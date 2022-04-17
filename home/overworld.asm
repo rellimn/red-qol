@@ -284,6 +284,16 @@ OverworldLoopLessDelay::
 	jr nz, .normalPlayerSpriteAdvancement
 	call DoBikeSpeedup
 .normalPlayerSpriteAdvancement
+; Running Shoes
+	ld a, [wHacks] ; Loads Hacks config into A
+	bit BIT_RUNNING_SHOES, a ; Sets Z to 1 if bit BIT_RUNNING_SHOES (7) of A (wHacks) is 0
+	jp z, .normalWalk ; If Z is set, i. e. Running Shoes are disabled, continue to .normalWalk
+	;
+	ld a, [hJoyHeld] ; Check buttons pressed
+	and B_BUTTON ; Set Z if B is pressed
+	jr z, .normalWalk ; If B is not pressed skip to .normalWalk
+	call DoBikeSpeedup ; Apply Bike Speedup if holding B
+.normalWalk ; Normal code resumes here
 	call AdvancePlayerSprite
 	ld a, [wWalkCounter]
 	and a
