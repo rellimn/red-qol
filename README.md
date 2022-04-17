@@ -1,6 +1,6 @@
 # Pokémon Red and Blue QoL and miscellaneous Enhancements
 
-This hack is based on [pokered Pokemon Red and Blue disassembly][https://github.com/pret/pokered].
+This hack is based on [pokered Pokemon Red and Blue disassembly](https://github.com/pret/pokered).
 
 Features various small enhancements that can be toggled on or off individually using an extra menu on the title screen.
 
