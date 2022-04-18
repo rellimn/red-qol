@@ -1777,10 +1777,10 @@ wOptions:: db
 ; bit 6 = Trainer Sprites
 ; 0: Male
 ; 1: Female
-; bits 0-3 = text box speed
-; 1: Normal
-; 3: Instant
-; 5: Auto
+; bits 0-1 = Text Box Speed
+; 00: Normal
+; 01: Instant
+; 10: Auto
 wHacks:: db
 
 wObtainedBadges:: flag_array NUM_BADGES

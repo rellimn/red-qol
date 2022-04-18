@@ -17,10 +17,10 @@ TEXT_DELAY_SLOW    EQU %101 ; 5
 	const BIT_BATTLE_SHIFT     ; 6
 	const BIT_BATTLE_ANIMATION ; 7
 
-; wHacks
-TEXT_BOX_NORMAL   EQU %001 ; 1
-TEXT_BOX_INSTANT  EQU %011 ; 3
-TEXT_BOX_AUTO     EQU %101 ; 5
+; wHacks Bits 0 and 1
+TEXT_BOX_NORMAL   EQU %00
+TEXT_BOX_INSTANT  EQU %01
+TEXT_BOX_AUTO     EQU %10
 
 	const_def 6
 	const BIT_TRAINER_SPRITES ; 6   (-th bit in wHacks)

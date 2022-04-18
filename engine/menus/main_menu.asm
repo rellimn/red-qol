@@ -786,14 +786,14 @@ SetHacksFromCursorPositions:
 	jr z, .RunningShoesOn
 .battleRunningShoesOff
 	set 7, d
-	jr .checkBattleStyle
+	jr .checkTrainerGender
 .RunningShoesOn
 	res 7, d
-.checkBattleStyle
+.checkTrainerGender
 	ld a, [wHacksTrainerSpriteCursorX] ; trainer sprite (battle style) cursor X coordinate
 	dec a
 	jr z, .battleStyleShift
-.battleStyleSet
+.TrainerGenderMale
 	set 6, d
 	jr .storeOptions
 .battleStyleShift
