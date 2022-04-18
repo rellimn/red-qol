@@ -2064,7 +2064,7 @@ wRoute18Gate1FCurScript:: db
 	ds 78
 wGameProgressFlagsEnd::
 
-	ds 56
+	ds 55
 
 wObtainedHiddenItemsFlags:: flag_array 112
 
