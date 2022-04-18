@@ -456,7 +456,7 @@ DisplayHackMenu:
 	ld de, RunningShoesText
 	call PlaceString
 	hlcoord 1, 11
-	ld de, TrainerSpriteText
+	ld de, TrainerGenderText
 	call PlaceString
 	hlcoord 2, 16
 	ld de, OptionMenuCancelText
@@ -509,8 +509,8 @@ DisplayHackMenu:
 	jr nz, .upPressed
 	cp 8 ; cursor in Running Shoes section?
 	jr z, .cursorInRunningShoes
-	cp 13 ; cursor in Trainer Sprite section?
-	jr z, .cursorInTrainerSprite
+	cp 13 ; cursor in Trainer Gender section?
+	jr z, .cursorInTrainerGender
 	cp 16 ; cursor on Cancel?
 	jr z, .loop
 .cursorInTextSpeed
@@ -558,10 +558,10 @@ DisplayHackMenu:
 	xor $0b ; toggle between 1 and 10
 	ld [wHacksRunningShoesCursorX], a
 	jp .eraseOldMenuCursor
-.cursorInTrainerSprite
-	ld a, [wHacksTrainerSpriteCursorX] ; battle style cursor X coordinate
+.cursorInTrainerGender
+	ld a, [wHacksTrainerGenderCursorX] ; battle style cursor X coordinate
 	xor $0b ; toggle between 1 and 10
-	ld [wHacksTrainerSpriteCursorX], a
+	ld [wHacksTrainerGenderCursorX], a
 	jp .eraseOldMenuCursor
 .pressedLeftInTextSpeed
 	ld a, [wHacksTextBoxSpeedCursorX] ; text speed cursor X coordinate
@@ -749,8 +749,8 @@ RunningShoesText:
 	db   "RUNNING SHOES"
 	next " OFF      ON@"
 
-TrainerSpriteText:
-	db   "TRAINER SPRITES"
+TrainerGenderText:
+	db   "TRAINER GENDER"
 	next " MALE     FEMALE@"
 
 TextSpeedOptionText:
@@ -790,7 +790,7 @@ SetHacksFromCursorPositions:
 .RunningShoesOn
 	res 7, d
 .checkTrainerGender
-	ld a, [wHacksTrainerSpriteCursorX] ; trainer sprite (battle style) cursor X coordinate
+	ld a, [wHacksTrainerGenderCursorX] ; trainer gender (battle style) cursor X coordinate
 	dec a
 	jr z, .battleStyleShift
 .TrainerGenderMale
@@ -864,10 +864,10 @@ SetCursorPositionsFromHacks:
 	call .placeUnfilledRightArrow
 	sla c
 	ld a, 1
-	jr nc, .storeTrainerSpriteCursorX
+	jr nc, .storeTrainerGenderCursorX
 	ld a, 10
-.storeTrainerSpriteCursorX
-	ld [wHacksTrainerSpriteCursorX], a ; trainer sprite (battle style) cursor X coordinate
+.storeTrainerGenderCursorX
+	ld [wHacksTrainerGenderCursorX], a ; trainer gender (battle style) cursor X coordinate
 	hlcoord 0, 13
 	call .placeUnfilledRightArrow
 ; cursor in front of Cancel

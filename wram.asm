@@ -781,7 +781,7 @@ wOptionsCancelCursorX:: db
 NEXTU
 wHacksTextBoxSpeedCursorX:: db
 wHacksRunningShoesCursorX:: db
-wHacksTrainerSpriteCursorX:: db
+wHacksTrainerGenderCursorX:: db
 
 NEXTU
 ; tile ID of the badge number being drawn
@@ -1774,7 +1774,7 @@ wOptions:: db
 ; bit 7 = Running Shoes
 ; 0: Off
 ; 1: On
-; bit 6 = Trainer Sprites
+; bit 6 = Trainer Gender
 ; 0: Male
 ; 1: Female
 ; bits 0-1 = Text Box Speed
