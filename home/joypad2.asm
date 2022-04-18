@@ -84,6 +84,10 @@ WaitForTextScrollButtonPress::
 
 ; (unless in link battle) waits for A or B being pressed and outputs the scrolling sound effect
 ManualTextScroll::
+	ld a, [wHacks] ; Loads Hacks config into A
+	bit BIT_TEXT_BOX_AUTO, a ; Sets Z to 1 if bit BIT_TEXT_BOX_AUTO (7) of A (wHacks) is 0
+	jp nz, .noManualTextScroll ; If Z is not set, i. e. Text Bos Speed is Auto, continue to .noManualTextScroll
+	;
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
 	jr z, .inLinkBattle
@@ -93,3 +97,4 @@ ManualTextScroll::
 .inLinkBattle
 	ld c, 65
 	jp DelayFrames
+.noManualTextScroll

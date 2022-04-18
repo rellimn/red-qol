@@ -6,11 +6,11 @@ Features various small enhancements that can be toggled on or off individually u
 
 Implemented:
 - Running Shoes
+- Automatic text scrolling
 
 ToDo:
-- Playable female trainer
+- Gender select
 - Instantaneous text
-- Automatic text scrolling
 - All 151 Pokemon obtainable
 - ...
 
