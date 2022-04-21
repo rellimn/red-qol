@@ -925,7 +925,7 @@ PLACEHOLDER1Text:
 	next " OFF      ON@"
 
 QuickSaveText:
-	db   "Faster Save"
+	db   "SKIP SAVE DIALOGUE"
 	next " OFF      ON@"
 
 SetHacksFromCursorPositions:
