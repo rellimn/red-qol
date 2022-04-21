@@ -782,6 +782,12 @@ NEXTU
 wHacksTextBoxSpeedCursorX:: db
 wHacksRunningShoesCursorX:: db
 wHacksTrainerGenderCursorX:: db
+wHacksNavRowCursorX:: db
+
+NEXTU
+wHacksPLACEHOLDER0CursorX:: db
+wHacksPLACEHOLDER1CursorX:: db
+wHacksPLACEHOLDER2CursorX:: db
 
 NEXTU
 ; tile ID of the badge number being drawn
