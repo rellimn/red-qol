@@ -141,6 +141,9 @@ LoadSAVIgnoreBadCheckSum:
 	jp LoadSAV2
 
 SaveSAV:
+	ld a, [wHacks]
+	bit BIT_QUICK_SAVE, a
+	jp nz, .save
 	farcall PrintSaveScreenText
 	ld hl, WouldYouLikeToSaveText
 	call SaveSAVConfirm
@@ -161,10 +164,14 @@ SaveSAV:
 	lb bc, 4, 18
 	call ClearScreenArea
 	hlcoord 1, 14
+	ld a, [wHacks]
+	bit BIT_QUICK_SAVE, a
+	jp nz, .noDialogue
 	ld de, NowSavingString
 	call PlaceString
 	ld c, 120
 	call DelayFrames
+.noDialogue
 	ld hl, GameSavedText
 	call PrintText
 	ld a, SFX_SAVE

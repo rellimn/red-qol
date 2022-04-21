@@ -622,7 +622,7 @@ DisplayHackMenu2:
 	ld de, PLACEHOLDER1Text
 	call PlaceString
 	hlcoord 1, 11
-	ld de, PLACEHOLDER2Text
+	ld de, QuickSaveText
 	call PlaceString
 	hlcoord 2, 16
 	ld de, OptionMenuCancelText ; TODO: implement Prev button to return to hack menu 1
@@ -677,8 +677,8 @@ DisplayHackMenu2:
 	jr z, .cursorInPLACEHOLDER0
 	cp 8 ; cursor in PLACEHOLDER1 section?
 	jr z, .cursorInPLACEHOLDER1
-	cp 13 ; cursor in PLACEHOLDER2 section?
-	jr z, .cursorInPLACEHOLDER2
+	cp 13 ; cursor in Quick Save section?
+	jr z, .cursorInQuickSave
 	cp 16 ; cursor on Cancel?
 	jr z, .loop 
 .downPressed
@@ -727,10 +727,10 @@ DisplayHackMenu2:
 	xor $0b ; toggle between 1 and 10
 	ld [wHacksPLACEHOLDER1CursorX], a
 	jp .eraseOldMenuCursor
-.cursorInPLACEHOLDER2
-	ld a, [wHacksPLACEHOLDER2CursorX] ; PLACEHOLDER2 X coordinate
+.cursorInQuickSave
+	ld a, [wHacksQuickSaveCursorX] ; Quick Save X coordinate
 	xor $0b ; toggle between 1 and 10
-	ld [wHacksPLACEHOLDER2CursorX], a
+	ld [wHacksQuickSaveCursorX], a
 	jp .eraseOldMenuCursor
 
 
@@ -924,8 +924,8 @@ PLACEHOLDER1Text:
 	db   "PLACEHOLDER1"
 	next " OFF      ON@"
 
-PLACEHOLDER2Text:
-	db   "PLACEHOLDER2"
+QuickSaveText:
+	db   "Faster Save"
 	next " OFF      ON@"
 
 SetHacksFromCursorPositions:
@@ -985,18 +985,18 @@ SetHacks2FromCursorPositions:
 	jr nz, .PLACEHOLDER1On
 .PLACEHOLDER1Off
 	res BIT_PLACEHOLDER1, d
-	jr .checkPLACEHOLDER2
+	jr .checkQuickSave
 .PLACEHOLDER1On
 	set BIT_PLACEHOLDER1, d
-.checkPLACEHOLDER2
-	ld a, [wHacksPLACEHOLDER2CursorX]
+.checkQuickSave
+	ld a, [wHacksQuickSaveCursorX]
 	dec a
-	jr nz, .PLACEHOLDER2On
-.PLACEHOLDER2Off
-	res BIT_PLACEHOLDER2, d
+	jr nz, .quickSaveOn
+.quickSaveOff
+	res BIT_QUICK_SAVE, d
 	jr .storeOptions
-.PLACEHOLDER2On
-	set BIT_PLACEHOLDER2, d
+.quickSaveOn
+	set BIT_QUICK_SAVE, d
 .storeOptions
 	ld a, d
 	ld [wHacks], a
@@ -1102,10 +1102,10 @@ SetCursorPositionsFromHacks2:
 	call .placeUnfilledRightArrow
 	sra c 
 	ld a, 1
-	jr nc, .storePLACEHOLDER2CursorX
+	jr nc, .storeQuickSaveCursorX
 	ld a, 10
-.storePLACEHOLDER2CursorX
-	ld [wHacksPLACEHOLDER2CursorX], a ; PLACEHOLDER2 (battle style) cursor X coordinate
+.storeQuickSaveCursorX
+	ld [wHacksQuickSaveCursorX], a ; Quick Save cursor X coordinate
 	hlcoord 0, 13
 	call .placeUnfilledRightArrow
 ; cursor in front of Cancel
