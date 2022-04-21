@@ -1783,6 +1783,10 @@ wOptions:: db
 ; bit 6 = Trainer Gender
 ; 0: Male
 ; 1: Female
+; bit 5 = UNUSED
+; bit 4 = PLACEHOLDER2
+; bit 3 = PLACEHOLDER1
+; bit 2 = PLACEHOLDER0
 ; bits 0-1 = Text Box Speed
 ; 00: Normal
 ; 01: Instant

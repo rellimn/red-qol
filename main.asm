@@ -79,6 +79,7 @@ INCLUDE "engine/events/hidden_objects/pokemon_stuff.asm"
 SECTION "Font Graphics", ROMX
 
 INCLUDE "gfx/font.asm"
+; Following 3 were moved from Bank 1
 INCLUDE "engine/events/display_pokedex.asm"
 INCLUDE "engine/menus/players_pc.asm"
 INCLUDE "engine/pokemon/remove_mon.asm"

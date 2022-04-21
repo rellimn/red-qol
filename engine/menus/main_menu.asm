@@ -601,6 +601,7 @@ DisplayHackMenu:
 	ld [wHacksTextBoxSpeedCursorX], a ; text speed cursor X coordinate
 	jp .eraseOldMenuCursor
 
+; called when clicking next on hack menu 1
 DisplayHackMenu2:
 	hlcoord 0, 0
 	ld b, 3
@@ -615,16 +616,16 @@ DisplayHackMenu2:
 	ld c, 18
 	call TextBoxBorder
 	hlcoord 1, 1
-	ld de, PLACEHOLDER2Text
+	ld de, PLACEHOLDER0Text
 	call PlaceString
 	hlcoord 1, 6
 	ld de, PLACEHOLDER1Text
 	call PlaceString
 	hlcoord 1, 11
-	ld de, PLACEHOLDER0Text
+	ld de, PLACEHOLDER2Text
 	call PlaceString
 	hlcoord 2, 16
-	ld de, OptionMenuCancelText
+	ld de, OptionMenuCancelText ; TODO: implement Prev button to return to hack menu 1
 	call PlaceString
 	xor a
 	ld [wCurrentMenuItem], a
@@ -632,10 +633,10 @@ DisplayHackMenu2:
 	inc a
 	ld [wLetterPrintingDelayFlags], a
 	ld [wHacksNavRowCursorX], a
-	ld a, 3 ; text speed cursor Y coordinate
+	ld a, 3 ; top row cursor Y coordinate
 	ld [wTopMenuItemY], a
-	call SetCursorPositionsFromHacks2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	ld a, [wHacksPLACEHOLDER0CursorX] ; Text speed cursor X coordinate
+	call SetCursorPositionsFromHacks2
+	ld a, [wHacksPLACEHOLDER0CursorX] ; PLACEHOLDER0 cursor X coordinate
 	ld [wTopMenuItemX], a
 	ld a, $01
 	ldh [hAutoBGTransferEnabled], a ; enable auto background transfer
@@ -657,7 +658,7 @@ DisplayHackMenu2:
 	jr z, .checkDirectionKeys
 	ld a, [wTopMenuItemY]
 	cp 16 ; is the cursor in Nav Row?
-	jr nz, .loop
+	jr nz, .loop ; if yes, continue to .exitMenu, else jump to .loop
 .exitMenu
 	ld a, SFX_PRESS_AB
 	call PlaySound
@@ -672,11 +673,11 @@ DisplayHackMenu2:
 	jr nz, .downPressed
 	bit BIT_D_UP, b
 	jr nz, .upPressed
-	cp 3
+	cp 3 ; cursor in PLACEHOLDER0 section?
 	jr z, .cursorInPLACEHOLDER0
 	cp 8 ; cursor in PLACEHOLDER1 section?
 	jr z, .cursorInPLACEHOLDER1
-	cp 13 ; cursor in PLACEHOLDER1 section?
+	cp 13 ; cursor in PLACEHOLDER2 section?
 	jr z, .cursorInPLACEHOLDER2
 	cp 16 ; cursor on Cancel?
 	jr z, .loop 
@@ -717,21 +718,20 @@ DisplayHackMenu2:
 	call PlaceUnfilledArrowMenuCursor
 	jp .loop
 .cursorInPLACEHOLDER0
-	ld a, [wHacksPLACEHOLDER0CursorX] ; battle animation cursor X coordinate
+	ld a, [wHacksPLACEHOLDER0CursorX] ; PLACEHOLDER0 X coordinate
 	xor $0b ; toggle between 1 and 10
 	ld [wHacksPLACEHOLDER0CursorX], a
 	jp .eraseOldMenuCursor
 .cursorInPLACEHOLDER1
-	ld a, [wHacksPLACEHOLDER1CursorX] ; battle animation cursor X coordinate
+	ld a, [wHacksPLACEHOLDER1CursorX] ; PLACEHOLDER1 X coordinate
 	xor $0b ; toggle between 1 and 10
 	ld [wHacksPLACEHOLDER1CursorX], a
 	jp .eraseOldMenuCursor
 .cursorInPLACEHOLDER2
-	ld a, [wHacksPLACEHOLDER2CursorX] ; battle style cursor X coordinate
+	ld a, [wHacksPLACEHOLDER2CursorX] ; PLACEHOLDER2 X coordinate
 	xor $0b ; toggle between 1 and 10
 	ld [wHacksPLACEHOLDER2CursorX], a
 	jp .eraseOldMenuCursor
-
 
 
 DisplayOptionMenu:
@@ -918,15 +918,15 @@ HacksMenuCancelText:
 
 PLACEHOLDER0Text:
 	db   "PLACEHOLDER0"
-	next " OFF      OFF@"
+	next " OFF      ON@"
 
 PLACEHOLDER1Text:
 	db   "PLACEHOLDER1"
-	next " OFF      OFF@"
+	next " OFF      ON@"
 
 PLACEHOLDER2Text:
 	db   "PLACEHOLDER2"
-	next " OFF      OFF@"
+	next " OFF      ON@"
 
 SetHacksFromCursorPositions:
 	ld hl, TextBoxSpeedOptionData
@@ -946,7 +946,7 @@ SetHacksFromCursorPositions:
 	or $FC
 	and d
 	ld d, a
-	ld a, [wHacksRunningShoesCursorX] ; running shoes (battle animation) cursor X coordinate
+	ld a, [wHacksRunningShoesCursorX] ; running shoes cursor X coordinate
 	dec a
 	jr z, .RunningShoesOn
 .battleRunningShoesOff
@@ -955,7 +955,7 @@ SetHacksFromCursorPositions:
 .RunningShoesOn
 	res 7, d
 .checkTrainerGender
-	ld a, [wHacksTrainerGenderCursorX] ; trainer gender (battle style) cursor X coordinate
+	ld a, [wHacksTrainerGenderCursorX] ; trainer gender cursor X coordinate
 	dec a
 	jr z, .battleStyleShift
 .TrainerGenderMale
@@ -971,32 +971,32 @@ SetHacksFromCursorPositions:
 SetHacks2FromCursorPositions:
 	ld a, [wHacks]
 	ld d, a
-	ld a, [wHacksPLACEHOLDER2CursorX]
-	dec a
-	jr nz, .PLACEHOLDER2On
-.PLACEHOLDER2Off
-	res BIT_PLACEHOLDER2, d
+	ld a, [wHacksPLACEHOLDER0CursorX] ; PLACEHOLDER0 cursor x coordinate
+	dec a ; If cursor is on "off", its x value will be 1 (now stored in a)
+	jr nz, .PLACEHOLDER0On ; If cursor x value is not zero after decrement, jump to .PLACEHOLDER0On
+.PLACEHOLDER0Off ; else continue to PLACEHOLDER0Off
+	res BIT_PLACEHOLDER0, d
 	jr .checkPLACEHOLDER1
-.PLACEHOLDER2On
-	set BIT_PLACEHOLDER2, d
+.PLACEHOLDER0On
+	set BIT_PLACEHOLDER0, d
 .checkPLACEHOLDER1
 	ld a, [wHacksPLACEHOLDER1CursorX]
 	dec a
 	jr nz, .PLACEHOLDER1On
 .PLACEHOLDER1Off
 	res BIT_PLACEHOLDER1, d
-	jr .checkPLACEHOLDER0
+	jr .checkPLACEHOLDER2
 .PLACEHOLDER1On
 	set BIT_PLACEHOLDER1, d
-.checkPLACEHOLDER0
-	ld a, [wHacksPLACEHOLDER0CursorX]
+.checkPLACEHOLDER2
+	ld a, [wHacksPLACEHOLDER2CursorX]
 	dec a
-	jr nz, .PLACEHOLDER0On
-.PLACEHOLDER0Off
-	res BIT_PLACEHOLDER0, d
+	jr nz, .PLACEHOLDER2On
+.PLACEHOLDER2Off
+	res BIT_PLACEHOLDER2, d
 	jr .storeOptions
-.PLACEHOLDER0On
-	set BIT_PLACEHOLDER0, d
+.PLACEHOLDER2On
+	set BIT_PLACEHOLDER2, d
 .storeOptions
 	ld a, d
 	ld [wHacks], a
@@ -1082,10 +1082,9 @@ SetCursorPositionsFromHacks:
 SetCursorPositionsFromHacks2:
 	ld a, [wHacks]
 	ld c, a
-	sla c 
-	sla c 
-	sla c 
-	sla c
+	sra c
+	sra c
+	sra c
 	ld a, 1 ; On
 	jr nc, .storePLACEHOLDER0CursorX
 	ld a, 10 ; Off
@@ -1093,7 +1092,7 @@ SetCursorPositionsFromHacks2:
 	ld [wHacksPLACEHOLDER0CursorX], a
 	hlcoord 0, 3
 	call .placeUnfilledRightArrow
-	sla c
+	sra c
 	ld a, 1
 	jr nc, .storePLACEHOLDER1CursorX
 	ld a, 10
@@ -1101,7 +1100,7 @@ SetCursorPositionsFromHacks2:
 	ld [wHacksPLACEHOLDER1CursorX], a ; PLACEHOLDER1 (battle animation) cursor X coordinate
 	hlcoord 0, 8
 	call .placeUnfilledRightArrow
-	sla c 
+	sra c 
 	ld a, 1
 	jr nc, .storePLACEHOLDER2CursorX
 	ld a, 10
