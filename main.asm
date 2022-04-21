@@ -37,9 +37,7 @@ INCLUDE "engine/menus/draw_start_menu.asm"
 INCLUDE "engine/link/cable_club_npc.asm"
 INCLUDE "engine/menus/text_box.asm"
 INCLUDE "engine/battle/move_effects/drain_hp.asm"
-INCLUDE "engine/menus/players_pc.asm"
-INCLUDE "engine/pokemon/remove_mon.asm"
-INCLUDE "engine/events/display_pokedex.asm"
+
 
 
 SECTION "bank3", ROMX
@@ -81,6 +79,9 @@ INCLUDE "engine/events/hidden_objects/pokemon_stuff.asm"
 SECTION "Font Graphics", ROMX
 
 INCLUDE "gfx/font.asm"
+INCLUDE "engine/events/display_pokedex.asm"
+INCLUDE "engine/menus/players_pc.asm"
+INCLUDE "engine/pokemon/remove_mon.asm"
 
 
 SECTION "Battle Engine 1", ROMX
