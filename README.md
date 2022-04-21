@@ -7,10 +7,11 @@ Features various small enhancements that can be toggled on or off individually u
 Implemented:
 - Running Shoes
 - Automatic text scrolling
+- Instantaneous text
+- Skip save dialogue
 
 ToDo:
 - Gender select
-- Instantaneous text
 - All 151 Pokemon obtainable
 - ...
 
