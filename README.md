@@ -9,6 +9,7 @@ Implemented:
 - Automatic text scrolling
 - Instantaneous text
 - Skip save dialogue
+- Fix for 1/256 chance of missing on 100 Acc moves (Gen 1 Miss)
 
 ToDo:
 - Gender select
