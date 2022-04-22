@@ -5441,6 +5441,15 @@ MoveHitTest:
 .doAccuracyCheck
 ; if the random number generated is greater than or equal to the scaled accuracy, the move misses
 ; note that this means that even the highest accuracy is still just a 255/256 chance, not 100%
+	ld a, [wHacks]
+	bit BIT_FIX_MISS, a
+	jr z, .accCalc  ; if bit BIT_FIX_MISS of wHacks is not set, jump to .accCalc
+					; else continue to pre-check
+	ld a, $FF		;
+	cp b			; 
+	jr nz, .accCalc ; if $FF - movAcc == 0 return, else jump to .accCalc
+	ret				; return if move has max accuracy, skipping miss-check
+.accCalc
 	call BattleRandom
 	cp b
 	jr nc, .moveMissed

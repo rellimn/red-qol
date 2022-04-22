@@ -619,7 +619,7 @@ DisplayHackMenu2:
 	ld de, PLACEHOLDER0Text
 	call PlaceString
 	hlcoord 1, 6
-	ld de, PLACEHOLDER1Text
+	ld de, FixMissText
 	call PlaceString
 	hlcoord 1, 11
 	ld de, QuickSaveText
@@ -675,8 +675,8 @@ DisplayHackMenu2:
 	jr nz, .upPressed
 	cp 3 ; cursor in PLACEHOLDER0 section?
 	jr z, .cursorInPLACEHOLDER0
-	cp 8 ; cursor in PLACEHOLDER1 section?
-	jr z, .cursorInPLACEHOLDER1
+	cp 8 ; cursor in Gen 1 Miss section?
+	jr z, .cursorInFixMiss
 	cp 13 ; cursor in Quick Save section?
 	jr z, .cursorInQuickSave
 	cp 16 ; cursor on Cancel?
@@ -722,10 +722,10 @@ DisplayHackMenu2:
 	xor $0b ; toggle between 1 and 10
 	ld [wHacksPLACEHOLDER0CursorX], a
 	jp .eraseOldMenuCursor
-.cursorInPLACEHOLDER1
-	ld a, [wHacksPLACEHOLDER1CursorX] ; PLACEHOLDER1 X coordinate
+.cursorInFixMiss
+	ld a, [wHacksFixMissCursorX] ; Gen 1 Miss  X coordinate
 	xor $0b ; toggle between 1 and 10
-	ld [wHacksPLACEHOLDER1CursorX], a
+	ld [wHacksFixMissCursorX], a
 	jp .eraseOldMenuCursor
 .cursorInQuickSave
 	ld a, [wHacksQuickSaveCursorX] ; Quick Save X coordinate
@@ -920,8 +920,8 @@ PLACEHOLDER0Text:
 	db   "PLACEHOLDER0"
 	next " OFF      ON@"
 
-PLACEHOLDER1Text:
-	db   "PLACEHOLDER1"
+FixMissText:
+	db   "REMOVE GEN 1 MISS"
 	next " OFF      ON@"
 
 QuickSaveText:
@@ -976,18 +976,18 @@ SetHacks2FromCursorPositions:
 	jr nz, .PLACEHOLDER0On ; If cursor x value is not zero after decrement, jump to .PLACEHOLDER0On
 .PLACEHOLDER0Off ; else continue to PLACEHOLDER0Off
 	res BIT_PLACEHOLDER0, d
-	jr .checkPLACEHOLDER1
+	jr .checkFixMiss
 .PLACEHOLDER0On
 	set BIT_PLACEHOLDER0, d
-.checkPLACEHOLDER1
-	ld a, [wHacksPLACEHOLDER1CursorX]
+.checkFixMiss
+	ld a, [wHacksFixMissCursorX]
 	dec a
-	jr nz, .PLACEHOLDER1On
-.PLACEHOLDER1Off
-	res BIT_PLACEHOLDER1, d
+	jr nz, .fixMissOn
+.fixMissOff
+	res BIT_FIX_MISS, d
 	jr .checkQuickSave
-.PLACEHOLDER1On
-	set BIT_PLACEHOLDER1, d
+.fixMissOn
+	set BIT_FIX_MISS, d
 .checkQuickSave
 	ld a, [wHacksQuickSaveCursorX]
 	dec a
@@ -1094,10 +1094,10 @@ SetCursorPositionsFromHacks2:
 	call .placeUnfilledRightArrow
 	sra c
 	ld a, 1
-	jr nc, .storePLACEHOLDER1CursorX
+	jr nc, .storeFixMissCursorX
 	ld a, 10
-.storePLACEHOLDER1CursorX
-	ld [wHacksPLACEHOLDER1CursorX], a ; PLACEHOLDER1 (battle animation) cursor X coordinate
+.storeFixMissCursorX
+	ld [wHacksFixMissCursorX], a ; Gen 1 Miss cursor X coordinate
 	hlcoord 0, 8
 	call .placeUnfilledRightArrow
 	sra c 

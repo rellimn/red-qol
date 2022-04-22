@@ -26,7 +26,7 @@ TEXT_BOX_AUTO     EQU %10
 	const BIT_TEXT_BOX_INSTANT ; 0
 	const BIT_TEXT_BOX_AUTO ; 1
 	const BIT_PLACEHOLDER0 ; 2
-	const BIT_PLACEHOLDER1 ; 3
+	const BIT_FIX_MISS ; 3
 	const BIT_QUICK_SAVE ; 4
 	const_def 6
 	const BIT_TRAINER_GENDER ; 6   (-th bit in wHacks)

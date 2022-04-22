@@ -786,7 +786,7 @@ wHacksNavRowCursorX:: db
 
 NEXTU
 wHacksPLACEHOLDER0CursorX:: db
-wHacksPLACEHOLDER1CursorX:: db
+wHacksFixMissCursorX:: db
 wHacksQuickSaveCursorX:: db
 
 NEXTU
@@ -1785,7 +1785,7 @@ wOptions:: db
 ; 1: Female
 ; bit 5 = UNUSED
 ; bit 4 = Quick Save
-; bit 3 = PLACEHOLDER1
+; bit 3 = Gen 1 Miss
 ; bit 2 = PLACEHOLDER0
 ; bits 0-1 = Text Box Speed
 ; 00: Normal
