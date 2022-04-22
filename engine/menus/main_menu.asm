@@ -911,7 +911,7 @@ BattleStyleOptionText:
 	next " SHIFT    SET@"
 
 OptionMenuCancelText:
-	db "CANCEL        @"
+	db "CANCEL        @" ; Spaces are for clearing previous text
 
 HacksMenuCancelText:
 	db "CANCEL   NEXT@"
