@@ -436,7 +436,7 @@ SaveScreenInfoText:
 	next "#DEX    "
 	next "TIME@"
 
-DisplayHackMenu:
+DrawOptionMenu:
 	hlcoord 0, 0
 	ld b, 3
 	ld c, 18
@@ -449,15 +449,23 @@ DisplayHackMenu:
 	ld b, 3
 	ld c, 18
 	call TextBoxBorder
+	ret
+
+DrawOptionRows:
 	hlcoord 1, 1
-	ld de, TextBoxSpeedText
 	call PlaceString
+	inc de
 	hlcoord 1, 6
-	ld de, RunningShoesText
 	call PlaceString
+	inc de
 	hlcoord 1, 11
-	ld de, TrainerGenderText
 	call PlaceString
+	ret
+
+DisplayHackMenu:
+	call DrawOptionMenu
+	ld de, TextBoxSpeedText
+	call DrawOptionRows
 	hlcoord 2, 16
 	ld de, HacksMenuCancelText
 	call PlaceString
@@ -603,27 +611,9 @@ DisplayHackMenu:
 
 ; called when clicking next on hack menu 1
 DisplayHackMenu2:
-	hlcoord 0, 0
-	ld b, 3
-	ld c, 18
-	call TextBoxBorder
-	hlcoord 0, 5
-	ld b, 3
-	ld c, 18
-	call TextBoxBorder
-	hlcoord 0, 10
-	ld b, 3
-	ld c, 18
-	call TextBoxBorder
-	hlcoord 1, 1
+	call DrawOptionMenu
 	ld de, PLACEHOLDER0Text
-	call PlaceString
-	hlcoord 1, 6
-	ld de, FixMissText
-	call PlaceString
-	hlcoord 1, 11
-	ld de, QuickSaveText
-	call PlaceString
+	call DrawOptionRows
 	hlcoord 2, 16
 	ld de, OptionMenuCancelText ; TODO: implement Prev button to return to hack menu 1
 	call PlaceString
@@ -733,29 +723,10 @@ DisplayHackMenu2:
 	ld [wHacksQuickSaveCursorX], a
 	jp .eraseOldMenuCursor
 
-
 DisplayOptionMenu:
-	hlcoord 0, 0
-	ld b, 3
-	ld c, 18
-	call TextBoxBorder
-	hlcoord 0, 5
-	ld b, 3
-	ld c, 18
-	call TextBoxBorder
-	hlcoord 0, 10
-	ld b, 3
-	ld c, 18
-	call TextBoxBorder
-	hlcoord 1, 1
+	call DrawOptionMenu
 	ld de, TextSpeedOptionText
-	call PlaceString
-	hlcoord 1, 6
-	ld de, BattleAnimationOptionText
-	call PlaceString
-	hlcoord 1, 11
-	ld de, BattleStyleOptionText
-	call PlaceString
+	call DrawOptionRows
 	hlcoord 2, 16
 	ld de, OptionMenuCancelText
 	call PlaceString
